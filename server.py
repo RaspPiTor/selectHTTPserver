@@ -72,7 +72,7 @@ class HTTPServer():
                             break
                 elif i[1].endswith(b'\r\n\r\n') or i[1].endswith(b'\n\n'):
                     headers = self.parse_request(i[1])
-                    if headers:
+                    if isinstance(headers, dict):
                         print('New request @ %s total %s connections' % (
                             headers[b'URL'], len(timeout_data)))
                         code, headers, data = self.generate_response(caddr,
@@ -130,7 +130,7 @@ class HTTPServer():
 
     def parse_request(self, request):
         try:
-            url_data, *lines = request.splitlines()[:-2]
+            url_data, *lines = request.splitlines()[:-1]
             url_match = self.URL_REGEX.match(url_data)
             if url_match:
                 headers = {b'URL': self.URL_REWRITE.get(url_match.group(1),
